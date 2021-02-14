@@ -72,7 +72,7 @@ const reviewType = connection.define('reviewType', {
         type: Sequelize.STRING,
         allowNull: false,
         validate: {
-            isIn: [['Landlord', 'Environment', 'Apartment', 'Amenities']],
+            isIn: [['landlord', 'environment', 'apartment', 'amenities']],
         }
     }
 })
@@ -109,7 +109,7 @@ const reviewAudioVideo = connection.define('ReviewAudioVideo', {
 reviewType.hasMany(review) // A review type will have many reviews
 
 User.hasMany(review) // A user will have many reviews
-    
+
 Apartment.hasMany(review, {
     as: 'All_Reviews',
     onDelete: 'CASCADE'

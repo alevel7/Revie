@@ -35,3 +35,4 @@ export const getUserApartments = async(userId) => {
     })
     return result
 }
+

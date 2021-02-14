@@ -11,7 +11,7 @@ apartmentRoute.post('/', async (req, res) => {
         return res.status(400).json({ 'success': false, 'data': 'apartment type and address must be specified' })
     }
 
-    if (!req.body.type in ['2 bedroom flat', '3 bedroom flat', 'a room', 'a room self contain', 'a room and palour self contain', 'a room and palour']) {
+    if (!req.body.type in apartmentCtrl.apartmentType) {
         return res.status(406).json({
             'success': false,
             data: ` apartment type must be one of 
@@ -53,6 +53,15 @@ apartmentRoute.get('/', async (req, res) => {
 // route to update an apartment
 apartmentRoute.patch('/:id', verifyToken, async (req, res) => {
     const id = req.params.id
+
+    if (req.body.type !== undefined && !req.body.type in apartmentCtrl.apartmentType) {
+        return res.status(406).json({
+            'success': false,
+            data: ` apartment type must be one of 
+        ['2 bedroom flat', '3 bedroom flat','a room', 'a room self contain', 'a room and palour self contain','a room and palour']`
+        })
+    }
+
     // get the apartment with such id
     try {
         // get all apartments of the current user

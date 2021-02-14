@@ -17,7 +17,7 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, PATCH, OPTIONS");
     res.header("Access-Control-Allow-Headers", "*");
     next();
-  });
+});
 
 // add all the routes
 const users = require('./routes/users.js')
@@ -33,13 +33,41 @@ app.use('/apartments', apartment)
 
 model.connection.sync({
     logging: console.log,
-    force:true
+    // force:true
+}).then(() => {
+    // prefill the reviewtype table with the reviewtypes
+    // list of types that can be reviewed
+    const reviewTypeList = ['landlord', 'environment', 'apartment', 'amenities']
+    model.reviewType.findAll()
+        .then((dbReviewTypeList) => {
+            console.log(dbReviewTypeList)
+            const dbReviewTypeTargetList = dbReviewTypeList.map(type => type.getValueData('target'))
+            console.log(dbReviewTypeTargetList)
+
+            reviewTypeList.forEach((type) => {
+                console.log(`selecting type ${type}`)
+                // add each type to the database
+                // check if review type not already in database
+                const status = type in dbReviewTypeTargetList
+                console.log(`${type} in db ${status}`)
+                if (!status) {
+                    console.log(`adding type ${type}`)
+                    model.reviewType.create({
+                        target: type
+                    }).then((theType) => {
+                        console.log(`type ${type} added`)
+                    })
+
+                }
+            })
+        })
+
 })
-.then(() => {
-     console.log('Connection has been established successfully.');
-}).catch ((error) => {
-    console.error('Unable to connect to the database:', error);
-})
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    }).catch((error) => {
+        console.error('Unable to connect to the database:', error);
+    })
 
 
 app.listen(port, () => {
