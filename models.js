@@ -55,15 +55,14 @@ const Apartment = connection.define('Apartment', {
     type: {
         type: Sequelize.STRING,
         allowNull: false,
+        validate: {
+            isIn: [['2 bedroom flat', '3 bedroom flat','a room', 'a room self contain', 'a room and palour self contain','a room and palour']],
+        }
     },
     address: {
         type: Sequelize.TEXT,
         allowNull: false,
     },
-    image: {
-        type: Sequelize.STRING,
-        allowNull: true
-    }
 })
 
 // Review type indicates the type of review
@@ -108,12 +107,21 @@ const reviewAudioVideo = connection.define('ReviewAudioVideo', {
 
 // Establish relationships among entities
 reviewType.hasMany(review) // A review type will have many reviews
+
 User.hasMany(review) // A user will have many reviews
+    
+Apartment.hasMany(review, {
+    as: 'All_Reviews',
+    onDelete: 'CASCADE'
+}) // An apartment will have many reviews
+
 review.hasMany(reviewAudioVideo, {
     onDelete: 'CASCADE'
 }) // A review can have many images and / or videos
 
-
+// A user may have lived in many apartments before and vice versa
+Apartment.belongsToMany(User, {as: 'Tenants', through: 'CustomerApartments'})
+User.belongsToMany(Apartment, {as: 'Apartments', through: 'CustomerApartments'})
 
 export {User, Apartment, reviewType, review, reviewAudioVideo, connection};
 

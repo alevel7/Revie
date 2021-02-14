@@ -1,29 +1,28 @@
 const usersRoute = require('express').Router();
 const jwt = require('jsonwebtoken');
+import * as userCtrl from '../controllers/userController.js';
 import 'dotenv/config';
+const verifyToken = require('../dependencies.js').verifyToken;
+import * as models from '../models'
 
-
-import * as model from '../models.js'
 // THE ROUTES
 
 // route to create a user
-usersRoute.post('/', (req, res) => {
+usersRoute.post('/', async (req, res) => {
     // extract the user data an validate
-    model.User.create(req.body)
-    .then(user => {
-        // generate a token with the user id
-        const token = jwt.sign({ id:user.id }, process.env.MY_SECRET);
-        // return response
-        res.status(200).json({
+    try {
+        const newUser = await userCtrl.addUser(req.body)
+        const token = jwt.sign({ id:newUser.getDataValue('id') }, process.env.MY_SECRET);
+        return res.status(200).json({
             "status": "success",
             "data": {
               "token": token,
-              "userData": user
+              "userData": newUser
             }})
-    }).catch(error => {
-        console.log(error);
-        res.status(422).send(error)
-    })
+    } catch (error) {
+        console.log(error)
+        return res.status(422).send(error)
+    }
 })
 
 // route to sign in a user
@@ -35,13 +34,13 @@ usersRoute.post('/signin', async (req, res) => {
     // check whether user with such email exist
     try {
         // fetch all users with such email
-        const users = await model.User.findAll({  where: {  email: email } })
+        const users = await userCtrl.getUserByEmail(email)
         // check if any user exists or not
         if (users.length == 0) {
             return res.status(400).json({'success':false, 'data':'invalid email or password'})
         }
         // check if the user password is correct
-        if (model.User.prototype.isPasswordCorrect(password, users[0].getDataValue('password'))) {
+        if (models.User.prototype.isPasswordCorrect(password, users[0].getDataValue('password'))) {
             // generate a login token
             const token = jwt.sign({ id:users[0].getDataValue('id') }, process.env.MY_SECRET);
 
@@ -52,14 +51,16 @@ usersRoute.post('/signin', async (req, res) => {
         }
         return res.status(400).json({'success':false, 'data':'invalid email or password'})
     } catch (error) {
+        console.log(error)
         res.status(404).json({'success':false, errors:error})
     }
 })
 // route to get all users
-usersRoute.get('/', async (req, res) => {
+usersRoute.get('/', verifyToken, async (req, res) => {
     // extract all users
     try {
-        const allUsers = await model.User.findAll()
+        // const allUsers = await model.User.findAll()
+        const allUsers = await userCtrl.getAllUsers()
         res.status(200).json({"success": true, "data": allUsers})
     } catch (error) {
         res.status(200).json({"success": false, errors: error})
@@ -67,11 +68,14 @@ usersRoute.get('/', async (req, res) => {
 })
 
 // route to get a single user
-usersRoute.get('/:id', async (req, res) => {
+usersRoute.get('/:id',verifyToken, async (req, res) => {
     // get the user with the specified id
     const id = req.params.id
+    if (Number(id) !== Number(req.userId)){
+        return res.status(400).json({'success':false, 'data':'Unathorized User'})
+    }
     try {
-        const user = await model.User.findAll({  where: { id:id } })
+        const user = await userCtrl.getAUser(id)
         res.status(200).json({'success':true, data:user})
     } catch (error) {
         res.status(404).json({'success':false, errors:error.errors})
@@ -80,15 +84,18 @@ usersRoute.get('/:id', async (req, res) => {
 })
 
 // route to  update a user
-usersRoute.patch('/:id', async (req, res) => {
+usersRoute.patch('/:id',verifyToken, async (req, res) => {
     // get the user to be updated
     const id = req.params.id
-    console.log(`User with id ${id} requested`)
+    if (Number(id) !== Number(req.userId)){
+        return res.status(400).json({'success':false, 'data':'Unathorized User'})
+    }
     try {
-        await model.User.update(req.body, {  where: { id: id } })
-        res.status(200).json({'success':true, data:`User with id ${id} updated successfully`})
+        await userCtrl.updateAUser(id, req.body)
+        return res.status(200).json({'success':true, data:`User with id ${id} updated successfully`})
     } catch (error){
-        res.status(404).json({'success':false, errors:error.errors})
+        console.log(error)
+        return res.status(404).json({'success':false, errors:error.errors})
     } 
 })
 
