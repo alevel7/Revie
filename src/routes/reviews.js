@@ -1,11 +1,11 @@
 const reviewRoute = require('express').Router();
-import * as reviewCtrl from '../src/controllers/reviewController.js.js';
-import * as apartmentCtrl from '../src/controllers/apartmentController.js.js';
+// import * as reviewCtrl from '../controllers/reviewController.js';
+import * as apartmentCtrl from '../controllers/apartmentController.js';
 
 const upload = require('../dependencies.js').upload;
 import 'dotenv/config';
 const verifyToken = require('../dependencies.js').verifyToken;
-import * as models from '../src/models'
+import * as models from '../models'
 
 
 

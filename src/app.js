@@ -49,9 +49,9 @@ app.use('/apartments', apartment)
 app.use('/reviews', reviews)
 
 app.get('/', (req, res) => {
-    res.send('Welcome to the TeamWork')
+    res.send('Welcome to the Revie Platform')
   })
-  
+
 model.connection.sync({
     logging: console.log,
     // force:true

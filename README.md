@@ -1,5 +1,5 @@
-POST on the endpoint /users (create a new user)
-GET on the endpoint /users (list all users)
-GET on the endpoint /users/:userId (get a specific user)
-PATCH on the endpoint /users/:userId (update the data for a specific user)
-DELETE on the endpoint /users/:userId (remove a specific user)
+#### REVIE PLATFORM
+
+Revie is a hypothetical platform where users can sign up with their basic information and post reviews about apartments they've previously lived in.
+
+

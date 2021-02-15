@@ -1,7 +1,7 @@
 const apartmentRoute = require('express').Router();
 import 'dotenv/config';
-import * as apartmentCtrl from '../src/controllers/apartmentController.js.js';
-import * as userCtrl from '../src/controllers/userController.js';
+import * as apartmentCtrl from '../controllers/apartmentController.js';
+import * as userCtrl from '../controllers/userController.js';
 const verifyToken = require('../dependencies.js').verifyToken;
 
 

@@ -2,3 +2,4 @@ node_modules
 images/
 db.sqlite
 db.sqlite-journal
+.env
