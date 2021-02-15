@@ -88,9 +88,9 @@ reviewRoute.patch('/:id', async (req, res) => {
     if (req.body.helpful) {
         try {
             // get current review to be updated
-            const current_review = await models.review.findOne({ where: {id: req.params.id}})
+            const current_review = await models.review.findOne({ where: { id: req.params.id } })
             // create a new data to update with
-            const data = {...req.body}
+            const data = { ...req.body }
             // increment helpful by one if true
             if (req.body.helpful === true) {
                 data.helpful = current_review.getDataValue('helpful') + 1
@@ -103,6 +103,25 @@ reviewRoute.patch('/:id', async (req, res) => {
         }
     }
     return res.status(200).json({ "success": true, "data": `review with id ${req.params.id} updated successfully` })
+
+})
+
+// get a review
+reviewRoute.get('/:id', async (req, res) => {
+    try {
+        const review = await models.review.findOne({
+            where: {
+                id: req.params.id
+            },
+            include: [{
+                model: models.reviewAudioVideo, as: 'media'
+            }]
+        })
+        return res.status(200).json({'success':true, data:review})
+    } catch (error) {
+        console.log(error)
+        return res.json(error)
+    }
 
 })
 
