@@ -52,6 +52,7 @@ var verifyToken = /*#__PURE__*/function () {
               }
 
               req.userId = decoded.id;
+              console.log(req.userId);
             });
             next();
 

@@ -16,6 +16,7 @@ const verifyToken = async (req, res, next) => {
             return res.status(401).json({ "status": "token error", "error": "Unauthorized request" })
         }
         req.userId = decoded.id
+        console.log(req.userId)
     })
     next()
 }

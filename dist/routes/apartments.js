@@ -21,7 +21,7 @@ var apartmentRoute = require('express').Router();
 var verifyToken = require('../dependencies.js').verifyToken; // route to add an apartment
 
 
-apartmentRoute.post('/', /*#__PURE__*/function () {
+apartmentRoute.post('/', verifyToken, /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(req, res) {
     var newApartment, newApartmentId;
     return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -152,15 +152,16 @@ apartmentRoute.patch('/:id', verifyToken, /*#__PURE__*/function () {
           case 6:
             all_user_apartments = _context3.sent;
             // extract the list of apartments
-            all_user_apartments = all_user_apartments.getDataValue('Apartments'); // console.log(all_user_apartments);
-            // check if the current apartment to be updated belongs to the current user
+            all_user_apartments = all_user_apartments.getDataValue('Apartments');
+            console.log(all_user_apartments); // check if the current apartment to be updated belongs to the current user
 
             searched_apartment = all_user_apartments.filter(function (p) {
               return p.getDataValue('id') === Number(id);
             });
+            console.log(searched_apartment);
 
             if (!(searched_apartment.length === 0)) {
-              _context3.next = 13;
+              _context3.next = 15;
               break;
             }
 
@@ -169,32 +170,32 @@ apartmentRoute.patch('/:id', verifyToken, /*#__PURE__*/function () {
               'data': 'You cannot update an apartment not yours'
             }));
 
-          case 13:
-            _context3.next = 15;
+          case 15:
+            _context3.next = 17;
             return apartmentCtrl.updateAnApartment(id, req.body);
 
-          case 15:
+          case 17:
             return _context3.abrupt("return", res.status(200).json({
               'success': true,
               'data': " apartment with id ".concat(id, " successfully updated")
             }));
 
-          case 16:
-            _context3.next = 22;
+          case 18:
+            _context3.next = 24;
             break;
 
-          case 18:
-            _context3.prev = 18;
+          case 20:
+            _context3.prev = 20;
             _context3.t0 = _context3["catch"](3);
             console.log(_context3.t0);
             res.send(_context3.t0);
 
-          case 22:
+          case 24:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[3, 18]]);
+    }, _callee3, null, [[3, 20]]);
   }));
 
   return function (_x5, _x6) {

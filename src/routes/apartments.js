@@ -6,7 +6,7 @@ const verifyToken = require('../dependencies.js').verifyToken;
 
 
 // route to add an apartment
-apartmentRoute.post('/', async (req, res) => {
+apartmentRoute.post('/',verifyToken, async (req, res) => {
     if (req.body.type === undefined || req.body.address === undefined) {
         return res.status(400).json({ 'success': false, 'data': 'apartment type and address must be specified' })
     }
@@ -67,10 +67,10 @@ apartmentRoute.patch('/:id', verifyToken, async (req, res) => {
         let all_user_apartments = await userCtrl.getUserApartments(req.userId)
         // extract the list of apartments
         all_user_apartments =  all_user_apartments.getDataValue('Apartments')
-        // console.log(all_user_apartments);
+        console.log(all_user_apartments);
         // check if the current apartment to be updated belongs to the current user
         const searched_apartment = all_user_apartments.filter(p => p.getDataValue('id') === Number(id))
-        
+        console.log(searched_apartment)
         if (searched_apartment.length === 0) {
             return res.status(400).json({'success':false, 'data':'You cannot update an apartment not yours'})
         }else {
