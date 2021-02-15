@@ -116,6 +116,7 @@ Apartment.hasMany(review, {
 }) // An apartment will have many reviews
 
 review.hasMany(reviewAudioVideo, {
+    as: 'media',
     onDelete: 'CASCADE'
 }) // A review can have many images and / or videos
 

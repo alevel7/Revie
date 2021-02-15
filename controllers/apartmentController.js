@@ -1,8 +1,9 @@
 import * as model from '../models.js'
 
 
-export const addAnApartment = async (data) => {
+export const addAnApartment = async (data, userId) => {
     const newApartment = await model.Apartment.create(data)
+    await newApartment.addTenants(userId)
     return newApartment
 }
 

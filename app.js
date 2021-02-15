@@ -1,8 +1,11 @@
+require("@babel/polyfill");
+import "@babel/polyfill";
 const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 const port = process.env.PORT || 8001;
-
+const Cors = require('cors')
+import multer from 'multer';
 import * as model from './models.js';
 
 
@@ -19,16 +22,31 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.use('/images', express.static('images'));
+
+
+const errHandler = (err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        return res.json({
+            error: "upload failed",
+            message: err.message
+        })
+    }
+}
+app.use(errHandler);
+app.use(Cors())
+
+
+
+
 // add all the routes
 const users = require('./routes/users.js')
 const apartment = require('./routes/apartments.js')
 const reviews = require('./routes/reviews.js')
-const reviewtype = require('./routes/reviewtype')
 
 app.use('/users', users)
 app.use('/apartments', apartment)
-// app.use('/reviews', reviews)
-// app.use('/reviewtype', reviewtype)
+app.use('/reviews', reviews)
 
 
 model.connection.sync({
@@ -40,18 +58,14 @@ model.connection.sync({
     const reviewTypeList = ['landlord', 'environment', 'apartment', 'amenities']
     model.reviewType.findAll()
         .then((dbReviewTypeList) => {
-            console.log(dbReviewTypeList)
-            const dbReviewTypeTargetList = dbReviewTypeList.map(type => type.getValueData('target'))
-            console.log(dbReviewTypeTargetList)
-
+            // get a list of all the review type target
+            const dbReviewTypeTargetList = dbReviewTypeList.map(type => type.getDataValue('target'))
+            // check if any review type is absent in database, add it
             reviewTypeList.forEach((type) => {
-                console.log(`selecting type ${type}`)
                 // add each type to the database
                 // check if review type not already in database
-                const status = type in dbReviewTypeTargetList
-                console.log(`${type} in db ${status}`)
-                if (!status) {
-                    console.log(`adding type ${type}`)
+                if (dbReviewTypeTargetList.includes(type) === false) {
+                    // add review type to database
                     model.reviewType.create({
                         target: type
                     }).then((theType) => {

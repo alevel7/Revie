@@ -1,3 +1,5 @@
+import multer from 'multer';
+
 // middlewares
 const jwt = require('jsonwebtoken');
 // import 'dotenv/config';
@@ -18,4 +20,23 @@ const verifyToken = async (req, res, next) => {
     next()
 }
 
-module.exports = {verifyToken}
+//to store images in a folder in node js
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'images');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}_${file.originalname}`);
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png' || file.mimetype == 'video/mpeg' || file.mimetype == 'video/3gpp' || file.mimetype == 'video/x-msvideo') {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+}
+const upload = multer({ storage: storage, fileFilter: fileFilter });
+
+module.exports = {verifyToken, upload}

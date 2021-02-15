@@ -19,11 +19,10 @@ apartmentRoute.post('/', async (req, res) => {
         })
     }
     try {
-        const newApartment = await apartmentCtrl.addAnApartment(req.body)
+        const newApartment = await apartmentCtrl.addAnApartment(req.body, req.userId)
         // console.log(newApartment)
         const newApartmentId = newApartment.getDataValue('id')
         // stores the new apartmentid and userid in customer apartment table
-        await newApartment.addTenants(req.userId)
         return res.status(201).json({
             'success': true,
             'data': newApartment
