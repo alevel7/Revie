@@ -48,7 +48,10 @@ app.use('/users', users)
 app.use('/apartments', apartment)
 app.use('/reviews', reviews)
 
-
+app.get('/', (req, res) => {
+    res.send('Welcome to the TeamWork')
+  })
+  
 model.connection.sync({
     logging: console.log,
     // force:true
