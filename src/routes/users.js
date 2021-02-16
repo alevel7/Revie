@@ -12,6 +12,8 @@ usersRoute.post('/', async (req, res) => {
     // extract the user data an validate
     try {
         const newUser = await userCtrl.addUser(req.body)
+        // remove password field
+        delete newUser.dataValues.password
         const token = jwt.sign({ id:newUser.getDataValue('id') }, process.env.MY_SECRET);
         return res.status(200).json({
             "status": "success",
@@ -43,7 +45,7 @@ usersRoute.post('/signin', async (req, res) => {
         if (models.User.prototype.isPasswordCorrect(password, users[0].getDataValue('password'))) {
             // generate a login token
             const token = jwt.sign({ id:users[0].getDataValue('id') }, process.env.MY_SECRET);
-
+            delete users[0].dataValues.password
             return res.status(400).json({'success':true, data: {
                 token: token,
                 userData: users[0]

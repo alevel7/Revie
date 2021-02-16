@@ -6,7 +6,7 @@ const verifyToken = require('../dependencies.js').verifyToken;
 
 
 // route to add an apartment
-apartmentRoute.post('/',verifyToken, async (req, res) => {
+apartmentRoute.post('/', verifyToken, async (req, res) => {
     if (req.body.type === undefined || req.body.address === undefined) {
         return res.status(400).json({ 'success': false, 'data': 'apartment type and address must be specified' })
     }
@@ -66,16 +66,16 @@ apartmentRoute.patch('/:id', verifyToken, async (req, res) => {
         // get all apartments of the current user
         let all_user_apartments = await userCtrl.getUserApartments(req.userId)
         // extract the list of apartments
-        all_user_apartments =  all_user_apartments.getDataValue('Apartments')
+        all_user_apartments = all_user_apartments.getDataValue('Apartments')
         console.log(all_user_apartments);
         // check if the current apartment to be updated belongs to the current user
         const searched_apartment = all_user_apartments.filter(p => p.getDataValue('id') === Number(id))
         console.log(searched_apartment)
         if (searched_apartment.length === 0) {
-            return res.status(400).json({'success':false, 'data':'You cannot update an apartment not yours'})
-        }else {
+            return res.status(400).json({ 'success': false, 'data': 'You cannot update an apartment not yours' })
+        } else {
             await apartmentCtrl.updateAnApartment(id, req.body)
-            return res.status(200).json({'success':true, 'data':` apartment with id ${id} successfully updated`})
+            return res.status(200).json({ 'success': true, 'data': ` apartment with id ${id} successfully updated` })
         }
     } catch (error) {
         console.log(error)
@@ -87,16 +87,43 @@ apartmentRoute.patch('/:id', verifyToken, async (req, res) => {
 // get an apartment
 apartmentRoute.get('/:id', async (req, res) => {
     const id = req.params.id
-    try {
-        const Apartment = await apartmentCtrl.getAnApartment(id)
-        return res.status(200).json({
-            'success': true,
-            'data': Apartment
-        })
-    } catch (error) {
-        console.log(error)
-        return res.json({ 'success': false, error: error })
+
+    // check if a sort filter is specified
+    if (req.query.sort === 'mostrecent') {
+        try {
+            const Apartment = await apartmentCtrl.getAnApartment(id, 'mostrecent')
+            return res.status(200).json({
+                'success': true,
+                'data': Apartment
+            })
+        } catch (error) {
+            console.log(error)
+            return res.json({ 'success': false, error: error })
+        }
+    } else if (req.query.sort === 'mosthelpful') {
+        try {
+            const Apartment = await apartmentCtrl.getAnApartment(id, 'mosthelpful')
+            return res.status(200).json({
+                'success': true,
+                'data': Apartment
+            })
+        } catch (error) {
+            console.log(error)
+            return res.json({ 'success': false, error: error })
+        }
+    } else {
+        try {
+            const Apartment = await apartmentCtrl.getAnApartment(id, 'mostrecent')
+            return res.status(200).json({
+                'success': true,
+                'data': Apartment
+            })
+        } catch (error) {
+            console.log(error)
+            return res.json({ 'success': false, error: error })
+        }
     }
+
 
 })
 

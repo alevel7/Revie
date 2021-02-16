@@ -208,9 +208,12 @@ sample response
 ```
 #### get an apartment
 
-    GET /apartments/<id>
+    GET /apartments/<id>?sort=<sorttype>
 
     id - the id of the apartment whose details need to be updated.
+    sorttype - is an optional query string to fetch the review of an apartment
+    in a sorted form. a sorttype of mostrecent returns all review for this apartment from the most recent to oldest. A sorttype of mosthelpful
+    returns all reviews for this aparmtment from the most helpful to least helpful
 
 
 sample response

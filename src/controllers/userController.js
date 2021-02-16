@@ -3,7 +3,6 @@ import * as model from '../models.js'
 
 export const getAllUsers = async () => {
     let result = await model.User.findAll()
-    console.log(result)
     return result
 }
 
